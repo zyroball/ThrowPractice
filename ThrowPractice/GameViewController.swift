@@ -10,117 +10,111 @@ import UIKit
 import QuartzCore
 import SceneKit
 
-class GameViewController: UIViewController {
-
-    override func viewDidLoad() {
+class GameViewController: UIViewController, SCNSceneRendererDelegate
+{
+    weak var sceneView : SCNView?
+    var radialNode = SCNNode()
+    var balls: NSMutableArray = []
+    
+    override func viewDidLoad()
+    {
         super.viewDidLoad()
         
-        // create a new scene
-        let scene = SCNScene(named: "art.scnassets/ship.scn")!
-        
-        // create and add a camera to the scene
-        let cameraNode = SCNNode()
-        cameraNode.camera = SCNCamera()
-        scene.rootNode.addChildNode(cameraNode)
-        
-        // place the camera
-        cameraNode.position = SCNVector3(x: 0, y: 0, z: 15)
-        
-        // create and add a light to the scene
-        let lightNode = SCNNode()
-        lightNode.light = SCNLight()
-        lightNode.light!.type = .omni
-        lightNode.position = SCNVector3(x: 0, y: 10, z: 10)
-        scene.rootNode.addChildNode(lightNode)
-        
-        // create and add an ambient light to the scene
-        let ambientLightNode = SCNNode()
-        ambientLightNode.light = SCNLight()
-        ambientLightNode.light!.type = .ambient
-        ambientLightNode.light!.color = UIColor.darkGray
-        scene.rootNode.addChildNode(ambientLightNode)
-        
-        // retrieve the ship node
-        let ship = scene.rootNode.childNode(withName: "ship", recursively: true)!
-        
-        // animate the 3d object
-        ship.runAction(SCNAction.repeatForever(SCNAction.rotateBy(x: 0, y: 2, z: 0, duration: 1)))
-        
-        // retrieve the SCNView
-        let scnView = self.view as! SCNView
-        
-        // set the scene to the view
-        scnView.scene = scene
-        
-        // allows the user to manipulate the camera
-        scnView.allowsCameraControl = true
-        
-        // show statistics such as fps and timing information
-        scnView.showsStatistics = true
-        
-        // configure the view
-        scnView.backgroundColor = UIColor.black
-        
-        // add a tap gesture recognizer
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap(_:)))
-        scnView.addGestureRecognizer(tapGesture)
-    }
-    
-    @objc
-    func handleTap(_ gestureRecognize: UIGestureRecognizer) {
-        // retrieve the SCNView
-        let scnView = self.view as! SCNView
-        
-        // check what nodes are tapped
-        let p = gestureRecognize.location(in: scnView)
-        let hitResults = scnView.hitTest(p, options: [:])
-        // check that we clicked on at least one object
-        if hitResults.count > 0 {
-            // retrieved the first clicked object
-            let result = hitResults[0]
-            
-            // get its material
-            let material = result.node.geometry!.firstMaterial!
-            
-            // highlight it
-            SCNTransaction.begin()
-            SCNTransaction.animationDuration = 0.5
-            
-            // on completion - unhighlight
-            SCNTransaction.completionBlock = {
-                SCNTransaction.begin()
-                SCNTransaction.animationDuration = 0.5
-                
-                material.emission.contents = UIColor.black
-                
-                SCNTransaction.commit()
-            }
-            
-            material.emission.contents = UIColor.red
-            
-            SCNTransaction.commit()
-        }
-    }
-    
-    override var shouldAutorotate: Bool {
-        return true
-    }
-    
-    override var prefersStatusBarHidden: Bool {
-        return true
-    }
-    
-    override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
-        if UIDevice.current.userInterfaceIdiom == .phone {
-            return .allButUpsideDown
-        } else {
-            return .all
-        }
-    }
-    
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Release any cached data, images, etc that aren't in use.
+        self.setupScene()
+        self.createGround()
+        self.createCamera()
+        self.createBall()
+
     }
 
+    func setupScene()
+    {
+        let sv = SCNView(frame: view.bounds)
+        sv.backgroundColor = UIColor(hue: 0.3, saturation: 0.1, brightness: 0.1, alpha: 1)
+        sv.scene = SCNScene()
+        sv.autoenablesDefaultLighting = true
+        sv.allowsCameraControl = true
+        sv.delegate = self
+        view.addSubview(sv)
+        
+        self.sceneView = sv
+    }
+    
+    func createGround()
+    {
+        let ground = SCNBox(width: 15, height: 0.1, length: 15, chamferRadius: 0)
+        ground.firstMaterial?.diffuse.contents = UIColor(hue: 0.6, saturation: 0.5, brightness: 0.7, alpha: 1)
+        let groundNode = SCNNode(geometry: ground)
+        groundNode.position = SCNVector3(x: 0, y: -1, z: 0)
+        
+        groundNode.physicsBody = SCNPhysicsBody.static()
+        groundNode.physicsBody?.restitution = 0.8
+        groundNode.physicsBody?.categoryBitMask = 1 << 2
+        groundNode.physicsBody?.collisionBitMask = 1 << 1
+        sceneView?.scene?.rootNode.addChildNode(groundNode)
+    }
+    
+    func createBall() -> SCNNode
+    {
+        let ball = SCNSphere(radius: 0.2)
+        ball.firstMaterial?.diffuse.contents = UIColor.white
+        let ballNode = SCNNode(geometry: ball)
+        return ballNode
+    }
+    
+    func createCamera()
+    {
+        let camera = SCNNode()
+        camera.camera = SCNCamera()
+        camera.position = SCNVector3Make(-12.166028, 8.2300024, 20.9988766)
+        camera.rotation = SCNVector4Make(-0.560657382, -0.814222217, -0.150681511, 0.637639999)
+        sceneView?.scene?.rootNode.addChildNode(camera)
+    }
+    
+    func runRadialAction()
+    {
+        let dw = Float(M_PI) / 5.0
+
+        let ball = createBall()
+        ball.name = "1"
+        ball.rotation = SCNVector4(x: 0, y: 1, z: 0, w: Float(1) * dw)
+        ball.physicsBody = SCNPhysicsBody.dynamic()
+        ball.physicsBody?.categoryBitMask = 1 << 1
+        ball.physicsBody?.collisionBitMask = 1 << 2
+        ball.physicsBody?.restitution = 1
+        sceneView?.scene?.rootNode.addChildNode(ball)
+        
+        let dx = 3 * cos(Float(1) * dw)
+        let dz = 3 * sin(Float(1) * dw)
+        ball.physicsBody?.applyForce(SCNVector3(x: dx, y: 8, z: dz), asImpulse: true)
+//        ball.physicsBody?.isAffectedByGravity = true
+        ball.physicsBody?.angularDamping = 0.3
+        
+        self.balls.add(ball)
+    }
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?)
+    {
+        self.sceneView?.scene?.rootNode.addChildNode(radialNode)
+        runRadialAction()
+    }
+    
+    func renderer(aRenderer: SCNSceneRenderer, updateAtTime time: TimeInterval)
+    {
+        for i in 0..<self.balls.count
+        {
+            let tmpBall = self.balls[i] as! SCNNode
+            let dot = SCNBox(width: 0.04, height: 0.04, length: 0.04, chamferRadius: 0)
+            dot.firstMaterial?.diffuse.contents = UIColor(hue: CGFloat(Int(tmpBall.name!)!) * 0.1,
+                                                          saturation: 0.4, brightness: 1, alpha: 1)
+            let dotNode = SCNNode(geometry: dot)
+            dotNode.position = tmpBall.presentation.position
+            self.radialNode.addChildNode(dotNode)
+            
+            if tmpBall.position.y < 0
+            {
+                tmpBall.removeFromParentNode()
+            }
+        }
+    }
 }

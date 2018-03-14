@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1608A03A2058FA2100CA23D5 /* SceneKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1608A0392058FA0700CA23D5 /* SceneKit.framework */; };
 		1674E4C72058AA4D00F9E688 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1674E4C62058AA4D00F9E688 /* AppDelegate.swift */; };
 		1674E4C92058AA4D00F9E688 /* art.scnassets in Resources */ = {isa = PBXBuildFile; fileRef = 1674E4C82058AA4D00F9E688 /* art.scnassets */; };
 		1674E4CB2058AA4D00F9E688 /* GameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1674E4CA2058AA4D00F9E688 /* GameViewController.swift */; };
@@ -16,6 +17,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		1608A0392058FA0700CA23D5 /* SceneKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SceneKit.framework; path = System/Library/Frameworks/SceneKit.framework; sourceTree = SDKROOT; };
 		1674E4C32058AA4D00F9E688 /* ThrowPractice.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ThrowPractice.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1674E4C62058AA4D00F9E688 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		1674E4C82058AA4D00F9E688 /* art.scnassets */ = {isa = PBXFileReference; lastKnownFileType = wrapper.scnassets; path = art.scnassets; sourceTree = "<group>"; };
@@ -31,17 +33,27 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1608A03A2058FA2100CA23D5 /* SceneKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		1608A0382058FA0600CA23D5 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				1608A0392058FA0700CA23D5 /* SceneKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		1674E4BA2058AA4D00F9E688 = {
 			isa = PBXGroup;
 			children = (
 				1674E4C52058AA4D00F9E688 /* ThrowPractice */,
 				1674E4C42058AA4D00F9E688 /* Products */,
+				1608A0382058FA0600CA23D5 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
