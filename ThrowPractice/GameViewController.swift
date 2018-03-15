@@ -30,7 +30,10 @@ class GameViewController: UIViewController, SCNSceneRendererDelegate
     func setupScene()
     {
         let sv = SCNView(frame: view.bounds)
-        sv.backgroundColor = UIColor(hue: 0.3, saturation: 0.1, brightness: 0.1, alpha: 1)
+        sv.backgroundColor = UIColor(hue: 0.3,
+                                     saturation: 0.1,
+                                     brightness: 0.1,
+                                     alpha: 1)
         sv.scene = SCNScene()
         sv.autoenablesDefaultLighting = true
         sv.allowsCameraControl = true
@@ -42,15 +45,23 @@ class GameViewController: UIViewController, SCNSceneRendererDelegate
     
     func createGround()
     {
-        let ground = SCNBox(width: 15, height: 0.1, length: 15, chamferRadius: 0)
-        ground.firstMaterial?.diffuse.contents = UIColor(hue: 0.6, saturation: 0.5, brightness: 0.7, alpha: 1)
+        let ground = SCNBox(width: 15,
+                            height: 0.1,
+                            length: 15,
+                            chamferRadius: 0)
+        ground.firstMaterial?.diffuse.contents = UIColor(hue: 0.6,
+                                                         saturation: 0.5,
+                                                         brightness: 0.7,
+                                                         alpha: 1)
         let groundNode = SCNNode(geometry: ground)
-        groundNode.position = SCNVector3(x: 0, y: -1, z: 0)
+        groundNode.position = SCNVector3(x: 0,
+                                         y: -1, z: 0)
         
         groundNode.physicsBody = SCNPhysicsBody.static()
         groundNode.physicsBody?.restitution = 0.8
         groundNode.physicsBody?.categoryBitMask = 1 << 2
         groundNode.physicsBody?.collisionBitMask = 1 << 1
+
         sceneView?.scene?.rootNode.addChildNode(groundNode)
     }
     
@@ -59,6 +70,7 @@ class GameViewController: UIViewController, SCNSceneRendererDelegate
         let ball = SCNSphere(radius: 0.2)
         ball.firstMaterial?.diffuse.contents = UIColor.white
         let ballNode = SCNNode(geometry: ball)
+
         return ballNode
     }
     
@@ -68,16 +80,20 @@ class GameViewController: UIViewController, SCNSceneRendererDelegate
         camera.camera = SCNCamera()
         camera.position = SCNVector3Make(-12.166028, 8.2300024, 20.9988766)
         camera.rotation = SCNVector4Make(-0.560657382, -0.814222217, -0.150681511, 0.637639999)
+
         sceneView?.scene?.rootNode.addChildNode(camera)
     }
     
     func runRadialAction()
     {
-        let dw = Float(M_PI) / 5.0
+        let dw = Float(Double.pi) / 5.0
 
         let ball = createBall()
         ball.name = "1"
-        ball.rotation = SCNVector4(x: 0, y: 1, z: 0, w: Float(1) * dw)
+        ball.rotation = SCNVector4(x: 0,
+                                   y: 8,
+                                   z: 0,
+                                   w: Float(1) * dw)
         ball.physicsBody = SCNPhysicsBody.dynamic()
         ball.physicsBody?.categoryBitMask = 1 << 1
         ball.physicsBody?.collisionBitMask = 1 << 2
@@ -86,9 +102,8 @@ class GameViewController: UIViewController, SCNSceneRendererDelegate
         
         let dx = 3 * cos(Float(1) * dw)
         let dz = 3 * sin(Float(1) * dw)
-        ball.physicsBody?.applyForce(SCNVector3(x: dx, y: 8, z: dz), asImpulse: true)
-//        ball.physicsBody?.isAffectedByGravity = true
-        ball.physicsBody?.angularDamping = 0.3
+        ball.physicsBody?.applyForce(SCNVector3(x: 20, y: 8, z: dz), asImpulse: true)
+        ball.physicsBody?.angularDamping = 0.7
         
         self.balls.add(ball)
     }
